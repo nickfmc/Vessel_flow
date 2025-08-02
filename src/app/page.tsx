@@ -1,4 +1,5 @@
 import BookingWidget from "~/components/BookingWidget";
+import Link from "next/link";
 
 export default function HomePage() {
   return (
@@ -11,6 +12,18 @@ export default function HomePage() {
           <p className="text-lg text-gray-600">
             Professional Tour Booking System
           </p>
+          
+          {/* Navigation Links */}
+          <div className="mt-4 flex justify-center space-x-4">
+            <Link 
+              href="/dashboard"
+              className="bg-vessel-600 hover:bg-vessel-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            >
+              Operator Dashboard
+            </Link>
+            <span className="text-gray-400">|</span>
+            <span className="text-gray-600">Customer Booking (below)</span>
+          </div>
         </div>
         
         <div className="mx-auto max-w-2xl">

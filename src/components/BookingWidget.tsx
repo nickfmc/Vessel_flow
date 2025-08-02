@@ -182,11 +182,6 @@ export default async function BookingWidget({ scheduledTourId = DEFAULT_SCHEDULE
         <BookingForm 
           scheduledTourId={scheduledTour.id}
           availableSeats={availableSeats}
-          onBookingSuccess={() => {
-            // This would trigger a revalidation in a real app
-            // For now, we'll just refresh the page
-            window.location.reload();
-          }}
         />
       </div>
 

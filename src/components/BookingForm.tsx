@@ -5,10 +5,9 @@ import { useState } from 'react';
 interface BookingFormProps {
   scheduledTourId: string;
   availableSeats: number;
-  onBookingSuccess: () => void;
 }
 
-export function BookingForm({ scheduledTourId, availableSeats, onBookingSuccess }: BookingFormProps) {
+export function BookingForm({ scheduledTourId, availableSeats }: BookingFormProps) {
   const [passengerCount, setPassengerCount] = useState(1);
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
@@ -57,7 +56,11 @@ export function BookingForm({ scheduledTourId, availableSeats, onBookingSuccess 
       setPassengerCount(1);
       setCustomerName('');
       setCustomerEmail('');
-      onBookingSuccess();
+      
+      // Refresh the page to update the inventory display
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000); // Give user time to see the success message
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
