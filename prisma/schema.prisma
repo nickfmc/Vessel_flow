@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Operator {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  phone     String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  vessels Vessel[]
+  tours   Tour[]
+
+  @@map("operators")
+}
+
+model Vessel {
+  id         String   @id @default(cuid())
+  name       String
+  capacity   Int
+  operatorId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  operator       Operator        @relation(fields: [operatorId], references: [id], onDelete: Cascade)
+  scheduledTours ScheduledTour[]
+
+  @@map("vessels")
+}
+
+model Tour {
+  id                String   @id @default(cuid())
+  title             String
+  description       String?
+  price             Decimal  @db.Decimal(10, 2)
+  durationInMinutes Int
+  operatorId        String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  operator       Operator        @relation(fields: [operatorId], references: [id], onDelete: Cascade)
+  scheduledTours ScheduledTour[]
+
+  @@map("tours")
+}
+
+model ScheduledTour {
+  id        String   @id @default(cuid())
+  startTime DateTime
+  tourId    String
+  vesselId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tour     Tour      @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  vessel   Vessel    @relation(fields: [vesselId], references: [id], onDelete: Cascade)
+  bookings Booking[]
+
+  // Ensure a vessel can't be double-booked at the same time
+  @@unique([vesselId, startTime])
+  @@map("scheduled_tours")
+}
+
+model Booking {
+  id              String   @id @default(cuid())
+  passengerCount  Int
+  customerName    String
+  customerEmail   String
+  scheduledTourId String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  scheduledTour ScheduledTour @relation(fields: [scheduledTourId], references: [id], onDelete: Cascade)
+
+  @@map("bookings")
+}
