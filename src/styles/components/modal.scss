@@ -1,0 +1,73 @@
+.c-modal {
+  @apply fixed inset-0 z-50 flex items-center justify-center p-4;
+
+  &__backdrop {
+    @apply absolute inset-0 bg-black bg-opacity-50 transition-opacity duration-300;
+  }
+
+  &__content {
+    @apply relative bg-white rounded-xl shadow-2xl max-h-[90vh] overflow-y-auto;
+    @apply transform transition-all duration-300 scale-100;
+    @apply p-6;
+
+    &--sm {
+      @apply max-w-sm w-full;
+    }
+
+    &--md {
+      @apply max-w-md w-full;
+    }
+
+    &--lg {
+      @apply max-w-2xl w-full;
+    }
+
+    &--xl {
+      @apply max-w-4xl w-full;
+    }
+  }
+
+  &__close {
+    @apply absolute top-4 right-4 p-2 text-gray-400;
+    @apply hover:text-gray-600 hover:bg-gray-100 rounded-lg;
+    @apply transition-colors duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-gray-500;
+  }
+
+  &__close-icon {
+    @apply w-5 h-5;
+  }
+}
+
+/* Animation classes for enter/exit */
+.c-modal-enter {
+  @apply opacity-0;
+
+  .c-modal__content {
+    @apply scale-95;
+  }
+}
+
+.c-modal-enter-active {
+  @apply opacity-100 transition-opacity duration-300;
+
+  .c-modal__content {
+    @apply scale-100 transition-transform duration-300;
+  }
+}
+
+.c-modal-exit {
+  @apply opacity-100;
+
+  .c-modal__content {
+    @apply scale-100;
+  }
+}
+
+.c-modal-exit-active {
+  @apply opacity-0 transition-opacity duration-200;
+
+  .c-modal__content {
+    @apply scale-95 transition-transform duration-200;
+  }
+}

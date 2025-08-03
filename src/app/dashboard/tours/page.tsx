@@ -1,4 +1,9 @@
+'use client';
+
+import { useState } from 'react';
 import { db } from "~/server/db";
+import { Modal } from "~/components/modals/Modal";
+import { TourForm } from "~/components/forms/TourForm";
 
 async function getTours() {
   try {
@@ -40,8 +45,49 @@ function formatDuration(minutes: number): string {
   }
 }
 
-export default async function ToursPage() {
+async function ToursPageContent() {
   const tours = await getTours();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTour, setEditingTour] = useState<any>(null);
+  const [deletingTour, setDeletingTour] = useState<string | null>(null);
+
+  const handleEdit = (tour: any) => {
+    setEditingTour({
+      ...tour,
+      price: tour.price.toNumber(),
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (tourId: string) => {
+    if (!confirm('Are you sure you want to delete this tour? This action cannot be undone.')) {
+      return;
+    }
+
+    setDeletingTour(tourId);
+    try {
+      const response = await fetch(`/api/tours/${tourId}`, {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to delete tour');
+      }
+
+      window.location.reload();
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Failed to delete tour');
+    } finally {
+      setDeletingTour(null);
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingTour(null);
+  };
 
   return (
     <div>
@@ -52,7 +98,12 @@ export default async function ToursPage() {
           <p className="text-gray-600">Manage your tour packages and experiences</p>
         </div>
         <button className="bg-vessel-600 hover:bg-vessel-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-          Create New Tour
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-vessel-600 hover:bg-vessel-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          >
+            Create New Tour
+          </button>
         </button>
       </div>
 
@@ -68,12 +119,19 @@ export default async function ToursPage() {
                   <p className="text-sm text-gray-600 mt-1 line-clamp-2">{tour.description}</p>
                 </div>
                 <div className="flex space-x-2 ml-4">
-                  <button className="text-gray-400 hover:text-vessel-600">
+                  <button 
+                    onClick={() => handleEdit(tour)}
+                    className="text-gray-400 hover:text-vessel-600"
+                  >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                   </button>
-                  <button className="text-gray-400 hover:text-red-600">
+                  <button 
+                    onClick={() => handleDelete(tour.id)}
+                    disabled={deletingTour === tour.id}
+                    className="text-gray-400 hover:text-red-600 disabled:opacity-50"
+                  >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
@@ -128,7 +186,10 @@ export default async function ToursPage() {
             </svg>
             <h3 className="text-lg font-medium text-gray-900 mb-2">Create New Tour</h3>
             <p className="text-sm text-gray-600 mb-4">Design a new tour experience for your customers</p>
-            <button className="bg-vessel-600 hover:bg-vessel-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="bg-vessel-600 hover:bg-vessel-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            >
               Get Started
             </button>
           </div>
@@ -144,10 +205,24 @@ export default async function ToursPage() {
           <h3 className="text-xl font-medium text-gray-900 mb-2">No tours yet</h3>
           <p className="text-gray-600 mb-6">Get started by creating your first tour package.</p>
           <button className="bg-vessel-600 hover:bg-vessel-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
-            Create Your First Tour
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="bg-vessel-600 hover:bg-vessel-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+            >
+              Create Your First Tour
+            </button>
           </button>
         </div>
       )}
+
+      {/* Modal for Add/Edit Tour */}
+      <Modal isOpen={isModalOpen} onClose={closeModal} size="lg">
+        <TourForm tour={editingTour} onClose={closeModal} />
+      </Modal>
     </div>
   );
+}
+
+export default function ToursPage() {
+  return <ToursPageContent />;
 }

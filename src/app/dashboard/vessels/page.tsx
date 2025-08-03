@@ -1,4 +1,9 @@
+'use client';
+
+import { useState } from 'react';
 import { db } from "~/server/db";
+import { Modal } from "~/components/modals/Modal";
+import { VesselForm } from "~/components/forms/VesselForm";
 
 async function getVessels() {
   try {
@@ -27,8 +32,46 @@ async function getVessels() {
   }
 }
 
-export default async function VesselsPage() {
+async function VesselsPageContent() {
   const vessels = await getVessels();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingVessel, setEditingVessel] = useState<any>(null);
+  const [deletingVessel, setDeletingVessel] = useState<string | null>(null);
+
+  const handleEdit = (vessel: any) => {
+    setEditingVessel(vessel);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (vesselId: string) => {
+    if (!confirm('Are you sure you want to delete this vessel? This action cannot be undone.')) {
+      return;
+    }
+
+    setDeletingVessel(vesselId);
+    try {
+      const response = await fetch(`/api/vessels/${vesselId}`, {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to delete vessel');
+      }
+
+      window.location.reload();
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Failed to delete vessel');
+    } finally {
+      setDeletingVessel(null);
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingVessel(null);
+  };
 
   return (
     <div>
@@ -39,7 +82,12 @@ export default async function VesselsPage() {
           <p className="text-gray-600">Manage your fleet of vessels</p>
         </div>
         <button className="bg-vessel-600 hover:bg-vessel-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-          Add New Vessel
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-vessel-600 hover:bg-vessel-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          >
+            Add New Vessel
+          </button>
         </button>
       </div>
 
@@ -52,12 +100,19 @@ export default async function VesselsPage() {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">{vessel.name}</h3>
                 <div className="flex space-x-2">
-                  <button className="text-gray-400 hover:text-vessel-600">
+                  <button 
+                    onClick={() => handleEdit(vessel)}
+                    className="text-gray-400 hover:text-vessel-600"
+                  >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                   </button>
-                  <button className="text-gray-400 hover:text-red-600">
+                  <button 
+                    onClick={() => handleDelete(vessel.id)}
+                    disabled={deletingVessel === vessel.id}
+                    className="text-gray-400 hover:text-red-600 disabled:opacity-50"
+                  >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
@@ -114,7 +169,10 @@ export default async function VesselsPage() {
             </svg>
             <h3 className="text-lg font-medium text-gray-900 mb-2">Add New Vessel</h3>
             <p className="text-sm text-gray-600 mb-4">Register a new boat to your fleet</p>
-            <button className="bg-vessel-600 hover:bg-vessel-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="bg-vessel-600 hover:bg-vessel-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            >
               Get Started
             </button>
           </div>
@@ -130,10 +188,24 @@ export default async function VesselsPage() {
           <h3 className="text-xl font-medium text-gray-900 mb-2">No vessels yet</h3>
           <p className="text-gray-600 mb-6">Get started by adding your first vessel to the fleet.</p>
           <button className="bg-vessel-600 hover:bg-vessel-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
-            Add Your First Vessel
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="bg-vessel-600 hover:bg-vessel-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+            >
+              Add Your First Vessel
+            </button>
           </button>
         </div>
       )}
+
+      {/* Modal for Add/Edit Vessel */}
+      <Modal isOpen={isModalOpen} onClose={closeModal} size="md">
+        <VesselForm vessel={editingVessel} onClose={closeModal} />
+      </Modal>
     </div>
   );
+}
+
+export default function VesselsPage() {
+  return <VesselsPageContent />;
 }

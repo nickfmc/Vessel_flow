@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import './components/vessel-form.scss';
+@import './components/tour-form.scss';
+@import './components/modal.scss';
