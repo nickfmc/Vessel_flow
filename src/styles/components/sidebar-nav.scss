@@ -12,7 +12,7 @@
   &__item {
     @apply relative flex items-center px-3 py-3 text-sm font-medium rounded-xl;
     @apply text-gray-700 hover:text-vessel-700 hover:bg-vessel-50;
-    @apply transition-all duration-200 group;
+    @apply transition-all duration-200;
     @apply border border-transparent;
 
     &:hover {
