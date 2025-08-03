@@ -4,6 +4,9 @@ import { db } from '~/server/db';
 
 const updateVesselSchema = z.object({
   name: z.string().min(1, 'Vessel name is required').max(100, 'Vessel name too long'),
+  type: z.enum(['FISHING_BOAT', 'ZODIAC', 'COVERED_VESSEL'], {
+    errorMap: () => ({ message: 'Please select a valid vessel type' })
+  }),
   capacity: z.number().int().min(1, 'Capacity must be at least 1').max(100, 'Capacity cannot exceed 100'),
 });
 
@@ -85,6 +88,7 @@ export async function PUT(
       where: { id: vesselId },
       data: {
         name: validatedData.name,
+        type: validatedData.type,
         capacity: validatedData.capacity,
       },
       include: {

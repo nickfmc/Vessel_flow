@@ -2,11 +2,21 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { VesselTypeIcon } from '~/components/icons/VesselTypeIcon';
+
+type VesselType = 'FISHING_BOAT' | 'ZODIAC' | 'COVERED_VESSEL';
+
+const vesselTypeOptions = [
+  { value: 'FISHING_BOAT', label: 'Fishing Boat', description: 'Traditional fishing vessel' },
+  { value: 'ZODIAC', label: 'Zodiac', description: 'Inflatable boat for adventure tours' },
+  { value: 'COVERED_VESSEL', label: 'Covered Vessel', description: 'Enclosed boat with weather protection' },
+] as const;
 
 interface VesselFormProps {
   vessel?: {
     id: string;
     name: string;
+    type: VesselType;
     capacity: number;
   };
   onClose?: () => void;
@@ -16,6 +26,7 @@ export function VesselForm({ vessel, onClose }: VesselFormProps) {
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: vessel?.name || '',
+    type: vessel?.type || 'FISHING_BOAT' as VesselType,
     capacity: vessel?.capacity || 6,
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -88,6 +99,41 @@ export function VesselForm({ vessel, onClose }: VesselFormProps) {
             />
           </div>
 
+          {/* Vessel Type */}
+          <div className="c-vessel-form__field">
+            <label className="c-vessel-form__label">
+              Vessel Type *
+            </label>
+            <div className="c-vessel-form__vessel-types">
+              {vesselTypeOptions.map((option) => (
+                <label
+                  key={option.value}
+                  className={`c-vessel-form__vessel-type ${
+                    formData.type === option.value ? 'c-vessel-form__vessel-type--selected' : ''
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="vesselType"
+                    value={option.value}
+                    checked={formData.type === option.value}
+                    onChange={(e) => setFormData({ ...formData, type: e.target.value as VesselType })}
+                    className="c-vessel-form__vessel-type-input"
+                  />
+                  <div className="c-vessel-form__vessel-type-content">
+                    <div className="c-vessel-form__vessel-type-icon">
+                      <VesselTypeIcon type={option.value} />
+                    </div>
+                    <div className="c-vessel-form__vessel-type-text">
+                      <div className="c-vessel-form__vessel-type-label">{option.label}</div>
+                      <div className="c-vessel-form__vessel-type-description">{option.description}</div>
+                    </div>
+                  </div>
+                </label>
+              ))}
+            </div>
+          </div>
+
           {/* Capacity */}
           <div className="c-vessel-form__field">
             <label htmlFor="capacity" className="c-vessel-form__label">
@@ -131,7 +177,7 @@ export function VesselForm({ vessel, onClose }: VesselFormProps) {
           )}
           <button
             type="submit"
-            disabled={isLoading || !formData.name.trim() || formData.capacity < 1}
+            disabled={isLoading || !formData.name.trim() || formData.capacity < 1 || !formData.type}
             className="c-vessel-form__button c-vessel-form__button--primary"
           >
             {isLoading ? 'Saving...' : isEditing ? 'Update Vessel' : 'Add Vessel'}

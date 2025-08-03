@@ -43,6 +43,56 @@
     @apply text-xs text-gray-500 mt-1;
   }
 
+  &__vessel-types {
+    @apply grid grid-cols-1 gap-3;
+  }
+
+  &__vessel-type {
+    @apply relative cursor-pointer;
+  }
+
+  &__vessel-type-input {
+    @apply sr-only;
+  }
+
+  &__vessel-type-content {
+    @apply flex items-center p-4 border-2 border-gray-200 rounded-lg;
+    @apply hover:border-vessel-300 hover:bg-vessel-50;
+    @apply transition-all duration-200;
+  }
+
+  &__vessel-type--selected {
+    .c-vessel-form__vessel-type-content {
+      @apply border-vessel-500 bg-vessel-50 shadow-md;
+    }
+
+    .c-vessel-form__vessel-type-icon {
+      @apply text-vessel-600;
+    }
+
+    .c-vessel-form__vessel-type-label {
+      @apply text-vessel-700 font-semibold;
+    }
+  }
+
+  &__vessel-type-icon {
+    @apply flex-shrink-0 mr-4 text-gray-400;
+    @apply transition-colors duration-200;
+  }
+
+  &__vessel-type-text {
+    @apply flex-1;
+  }
+
+  &__vessel-type-label {
+    @apply text-sm font-medium text-gray-900;
+    @apply transition-colors duration-200;
+  }
+
+  &__vessel-type-description {
+    @apply text-xs text-gray-500 mt-1;
+  }
+
   &__error {
     @apply bg-red-50 border border-red-200 rounded-lg p-3;
 

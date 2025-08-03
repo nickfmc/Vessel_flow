@@ -3,10 +3,23 @@
 import { useState } from 'react';
 import { Modal } from "~/components/modals/Modal";
 import { VesselForm } from "~/components/forms/VesselForm";
+import { VesselTypeIcon } from "~/components/icons/VesselTypeIcon";
+
+type VesselType = 'FISHING_BOAT' | 'ZODIAC' | 'COVERED_VESSEL';
+
+const getVesselTypeLabel = (type: VesselType): string => {
+  switch (type) {
+    case 'FISHING_BOAT': return 'Fishing Boat';
+    case 'ZODIAC': return 'Zodiac';
+    case 'COVERED_VESSEL': return 'Covered Vessel';
+    default: return 'Unknown';
+  }
+};
 
 interface Vessel {
   id: string;
   name: string;
+  type: VesselType;
   capacity: number;
   operatorId: string;
   createdAt: Date;
@@ -87,9 +100,14 @@ export default function VesselsClientPage({ vessels }: VesselsClientPageProps) {
               {/* Vessel Header */}
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">{vessel.name}</h3>
+                  <div className="flex items-center space-x-3 mb-2">
+                    <div className="text-vessel-600">
+                      <VesselTypeIcon type={vessel.type} className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900">{vessel.name}</h3>
+                  </div>
                   <p className="text-sm text-gray-600 mt-1">
-                    Operated by {vessel.operator.name}
+                    {getVesselTypeLabel(vessel.type)} • Operated by {vessel.operator.name}
                   </p>
                 </div>
                 <div className="flex space-x-2 ml-4">

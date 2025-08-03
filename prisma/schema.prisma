@@ -29,6 +29,7 @@ model Operator {
 model Vessel {
   id         String   @id @default(cuid())
   name       String
+  type       VesselType @default(FISHING_BOAT)
   capacity   Int
   operatorId String
   createdAt  DateTime @default(now())
@@ -39,6 +40,12 @@ model Vessel {
   scheduledTours ScheduledTour[]
 
   @@map("vessels")
+}
+
+enum VesselType {
+  FISHING_BOAT
+  ZODIAC
+  COVERED_VESSEL
 }
 
 model Tour {
