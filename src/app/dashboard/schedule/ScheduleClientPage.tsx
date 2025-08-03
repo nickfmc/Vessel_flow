@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { Modal } from "~/components/modals/Modal";
 import { ScheduledTourForm } from "~/components/forms/ScheduledTourForm";
+import { BulkScheduleForm } from "~/components/forms/BulkScheduleForm";
+import { ScheduleCalendar } from "~/components/calendar/ScheduleCalendar";
 
 interface Tour {
   id: string;
@@ -79,8 +81,10 @@ function formatDuration(minutes: number): string {
 
 export default function ScheduleClientPage({ scheduledTours, tours, vessels }: ScheduleClientPageProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
   const [editingScheduledTour, setEditingScheduledTour] = useState<any>(null);
   const [deletingScheduledTour, setDeletingScheduledTour] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
 
   const handleEdit = (scheduledTour: ScheduledTour) => {
     setEditingScheduledTour({
@@ -129,6 +133,14 @@ export default function ScheduleClientPage({ scheduledTours, tours, vessels }: S
     setEditingScheduledTour(null);
   };
 
+  const closeBulkModal = () => {
+    setIsBulkModalOpen(false);
+  };
+
+  const handleTourClick = (tour: ScheduledTour) => {
+    handleEdit(tour);
+  };
+
   // Group scheduled tours by date
   const groupedTours = scheduledTours.reduce((groups, scheduledTour) => {
     const date = formatDate(scheduledTour.startTime);
@@ -147,12 +159,38 @@ export default function ScheduleClientPage({ scheduledTours, tours, vessels }: S
           <h1 className="text-2xl font-bold text-gray-900">Schedule</h1>
           <p className="text-gray-600">Manage tour departures and vessel assignments</p>
         </div>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="bg-vessel-600 hover:bg-vessel-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-        >
-          Schedule New Tour
-        </button>
+        <div className="flex items-center space-x-3">
+          {/* View Toggle */}
+          <div className="flex bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => setViewMode('list')}
+              className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                viewMode === 'list'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              List
+            </button>
+            <button
+              onClick={() => setViewMode('calendar')}
+              className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                viewMode === 'calendar'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Calendar
+            </button>
+          </div>
+          
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-vessel-600 hover:bg-vessel-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          >
+            Schedule New Tour
+          </button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -220,98 +258,105 @@ export default function ScheduleClientPage({ scheduledTours, tours, vessels }: S
         </div>
       </div>
 
-      {/* Schedule Timeline */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Upcoming Departures</h2>
-        </div>
+      {/* Schedule Content */}
+      {viewMode === 'calendar' ? (
+        <ScheduleCalendar 
+          scheduledTours={scheduledTours}
+          onTourClick={handleTourClick}
+        />
+      ) : (
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-900">Upcoming Departures</h2>
+          </div>
 
-        {Object.keys(groupedTours).length > 0 ? (
-          <div className="divide-y divide-gray-200">
-            {Object.entries(groupedTours).map(([date, tours]) => (
-              <div key={date} className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">{date}</h3>
-                <div className="space-y-4">
-                  {tours.map((scheduledTour) => (
-                    <div key={scheduledTour.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-4">
-                          <div className="flex-shrink-0">
-                            <div className="text-lg font-bold text-vessel-600">
-                              {formatTime(scheduledTour.startTime)}
+          {Object.keys(groupedTours).length > 0 ? (
+            <div className="divide-y divide-gray-200">
+              {Object.entries(groupedTours).map(([date, tours]) => (
+                <div key={date} className="p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">{date}</h3>
+                  <div className="space-y-4">
+                    {tours.map((scheduledTour) => (
+                      <div key={scheduledTour.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-4">
+                            <div className="flex-shrink-0">
+                              <div className="text-lg font-bold text-vessel-600">
+                                {formatTime(scheduledTour.startTime)}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {formatDuration(scheduledTour.tour.durationInMinutes)}
+                              </div>
                             </div>
-                            <div className="text-xs text-gray-500">
-                              {formatDuration(scheduledTour.tour.durationInMinutes)}
+                            
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-gray-900">{scheduledTour.tour.title}</h4>
+                              <p className="text-sm text-gray-600">
+                                {scheduledTour.vessel.name} • ${scheduledTour.tour.price} per person
+                              </p>
                             </div>
-                          </div>
-                          
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-gray-900">{scheduledTour.tour.title}</h4>
-                            <p className="text-sm text-gray-600">
-                              {scheduledTour.vessel.name} • ${scheduledTour.tour.price} per person
-                            </p>
-                          </div>
 
-                          <div className="text-right">
-                            <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              scheduledTour.availability.isFullyBooked
-                                ? 'bg-red-100 text-red-800'
-                                : scheduledTour.availability.availableSeats <= 2
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : 'bg-green-100 text-green-800'
-                            }`}>
-                              {scheduledTour.availability.availableSeats} / {scheduledTour.availability.totalCapacity} available
+                            <div className="text-right">
+                              <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                scheduledTour.availability.isFullyBooked
+                                  ? 'bg-red-100 text-red-800'
+                                  : scheduledTour.availability.availableSeats <= 2
+                                  ? 'bg-yellow-100 text-yellow-800'
+                                  : 'bg-green-100 text-green-800'
+                              }`}>
+                                {scheduledTour.availability.availableSeats} / {scheduledTour.availability.totalCapacity} available
+                              </div>
+                              <p className="text-xs text-gray-500 mt-1">
+                                {scheduledTour.availability.bookedSeats} booked
+                              </p>
                             </div>
-                            <p className="text-xs text-gray-500 mt-1">
-                              {scheduledTour.availability.bookedSeats} booked
-                            </p>
                           </div>
                         </div>
-                      </div>
 
-                      <div className="flex items-center space-x-2 ml-4">
-                        <button 
-                          onClick={() => handleEdit(scheduledTour)}
-                          className="text-gray-400 hover:text-vessel-600 p-2"
-                          title="Edit scheduled tour"
-                        >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                        </button>
-                        <button 
-                          onClick={() => handleDelete(scheduledTour.id)}
-                          disabled={deletingScheduledTour === scheduledTour.id}
-                          className="text-gray-400 hover:text-red-600 disabled:opacity-50 p-2"
-                          title="Delete scheduled tour"
-                        >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
+                        <div className="flex items-center space-x-2 ml-4">
+                          <button 
+                            onClick={() => handleEdit(scheduledTour)}
+                            className="text-gray-400 hover:text-vessel-600 p-2"
+                            title="Edit scheduled tour"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                          </button>
+                          <button 
+                            onClick={() => handleDelete(scheduledTour.id)}
+                            disabled={deletingScheduledTour === scheduledTour.id}
+                            className="text-gray-400 hover:text-red-600 disabled:opacity-50 p-2"
+                            title="Delete scheduled tour"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <svg className="w-24 h-24 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <h3 className="text-xl font-medium text-gray-900 mb-2">No scheduled tours</h3>
-            <p className="text-gray-600 mb-6">Get started by scheduling your first tour departure.</p>
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="bg-vessel-600 hover:bg-vessel-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-            >
-              Schedule Your First Tour
-            </button>
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <svg className="w-24 h-24 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <h3 className="text-xl font-medium text-gray-900 mb-2">No scheduled tours</h3>
+              <p className="text-gray-600 mb-6">Get started by scheduling your first tour departure.</p>
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                className="bg-vessel-600 hover:bg-vessel-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+              >
+                Schedule Your First Tour
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Quick Schedule Actions */}
       <div className="mt-8 bg-white rounded-lg shadow p-6">
@@ -319,6 +364,7 @@ export default function ScheduleClientPage({ scheduledTours, tours, vessels }: S
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <button 
             onClick={() => setIsModalOpen(true)}
+            onClick={() => setIsBulkModalOpen(true)}
             className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-vessel-300 hover:bg-vessel-50 transition-colors"
           >
             <svg className="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -353,6 +399,15 @@ export default function ScheduleClientPage({ scheduledTours, tours, vessels }: S
           tours={tours}
           vessels={vessels}
           onClose={closeModal} 
+        />
+      </Modal>
+
+      {/* Modal for Bulk Schedule */}
+      <Modal isOpen={isBulkModalOpen} onClose={closeBulkModal} size="xl">
+        <BulkScheduleForm 
+          tours={tours}
+          vessels={vessels}
+          onClose={closeBulkModal} 
         />
       </Modal>
     </div>
