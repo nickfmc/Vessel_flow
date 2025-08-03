@@ -8,13 +8,11 @@ interface Tour {
   id: string;
   title: string;
   description: string | null;
-  price: {
-    toNumber(): number;
-  };
+  price: number;
   durationInMinutes: number;
   operatorId: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   operator: {
     name: string;
   };
@@ -46,10 +44,7 @@ export default function ToursClientPage({ tours }: ToursClientPageProps) {
   const [deletingTour, setDeletingTour] = useState<string | null>(null);
 
   const handleEdit = (tour: any) => {
-    setEditingTour({
-      ...tour,
-      price: tour.price.toNumber(),
-    });
+    setEditingTour(tour);
     setIsModalOpen(true);
   };
 
@@ -136,7 +131,7 @@ export default function ToursClientPage({ tours }: ToursClientPageProps) {
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Price</span>
                   <span className="font-semibold text-lg text-green-600">
-                    ${tour.price.toNumber()}
+                    ${tour.price}
                   </span>
                 </div>
                 

@@ -21,7 +21,13 @@ async function getTours() {
       },
     });
 
-    return tours;
+    // Convert Prisma types to plain JavaScript types for client component
+    return tours.map(tour => ({
+      ...tour,
+      price: tour.price.toNumber(),
+      createdAt: tour.createdAt.toISOString(),
+      updatedAt: tour.updatedAt.toISOString(),
+    }));
   } catch (error) {
     console.error("Error fetching tours:", error);
     return [];
