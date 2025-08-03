@@ -50,7 +50,7 @@
   &__textarea {
     @apply w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm;
     @apply focus:outline-none focus:ring-2 focus:ring-vessel-500 focus:border-vessel-500;
-    @apply transition-colors duration-200 resize-vertical;
+    @apply transition-colors duration-200 resize-y;
 
     &:hover {
       @apply border-gray-400;
