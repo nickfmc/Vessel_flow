@@ -1,0 +1,69 @@
+.c-sidebar {
+  @apply w-64 bg-white shadow-sm min-h-screen border-r border-gray-200;
+}
+
+.c-sidebar-nav {
+  @apply mt-6 px-3;
+
+  &__items {
+    @apply space-y-2;
+  }
+
+  &__item {
+    @apply relative flex items-center px-3 py-3 text-sm font-medium rounded-xl;
+    @apply text-gray-700 hover:text-vessel-700 hover:bg-vessel-50;
+    @apply transition-all duration-200 group;
+    @apply border border-transparent;
+
+    &:hover {
+      @apply transform translate-x-1 shadow-sm;
+    }
+
+    &--active {
+      @apply bg-gradient-to-r from-vessel-500 to-vessel-600 text-white;
+      @apply shadow-lg shadow-vessel-500/25;
+      @apply border-vessel-400;
+
+      &:hover {
+        @apply from-vessel-600 to-vessel-700 text-white;
+        @apply transform translate-x-0;
+      }
+
+      .c-sidebar-nav__icon {
+        @apply text-white;
+      }
+    }
+  }
+
+  &__icon {
+    @apply mr-3 flex-shrink-0 text-gray-400;
+    @apply group-hover:text-vessel-600 transition-colors duration-200;
+
+    .c-sidebar-nav__item--active & {
+      @apply text-white;
+    }
+  }
+
+  &__text {
+    @apply flex-1;
+  }
+
+  &__indicator {
+    @apply absolute right-2 w-2 h-2 bg-white rounded-full;
+    @apply shadow-sm;
+  }
+}
+
+/* Modern hover effects */
+.c-sidebar-nav__item:not(.c-sidebar-nav__item--active) {
+  &:hover {
+    @apply bg-gradient-to-r from-vessel-50 to-vessel-100;
+    @apply border-vessel-200;
+  }
+}
+
+/* Focus states for accessibility */
+.c-sidebar-nav__item {
+  @apply focus:outline-none focus:ring-2 focus:ring-vessel-500 focus:ring-offset-2;
+  @apply focus:ring-offset-white;
+}
