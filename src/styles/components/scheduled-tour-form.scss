@@ -1,5 +1,5 @@
 .c-scheduled-tour-form {
-  @apply max-w-2xl mx-auto;
+  @apply w-full;
 
   &__form {
     @apply space-y-6;
@@ -14,7 +14,7 @@
   }
 
   &__subtitle {
-    @apply text-gray-600;
+    @apply text-gray-600 text-sm;
   }
 
   &__fields {
@@ -54,7 +54,7 @@
   }
 
   &__summary {
-    @apply bg-gray-50 rounded-lg p-4 border border-gray-200;
+    @apply bg-vessel-50 rounded-lg p-4 border border-vessel-200;
   }
 
   &__summary-title {

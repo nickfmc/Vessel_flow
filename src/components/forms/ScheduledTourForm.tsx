@@ -251,7 +251,7 @@ export function ScheduledTourForm({ scheduledTour, tours, vessels, onClose }: Sc
             disabled={isLoading || !formData.tourId || !formData.vesselId || !formData.startTime}
             className="c-scheduled-tour-form__button c-scheduled-tour-form__button--primary"
           >
-            {isLoading ? 'Saving...' : isEditing ? 'Update Schedule' : 'Schedule Tour'}
+            {isLoading ? 'Scheduling...' : isEditing ? 'Update Schedule' : 'Schedule Tour'}
           </button>
         </div>
       </form>
