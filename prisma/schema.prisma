@@ -6,14 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-}
-
-enum VesselType {
-  FISHING_BOAT
-  ZODIAC
-  COVERED_VESSEL
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Operator {
@@ -35,7 +29,7 @@ model Operator {
 model Vessel {
   id         String   @id @default(cuid())
   name       String
-  type       VesselType @default(FISHING_BOAT)
+  type       String   @default("FISHING_BOAT")
   capacity   Int
   operatorId String
   createdAt  DateTime @default(now())
