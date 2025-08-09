@@ -20,7 +20,6 @@ enum VesselType {
 model Operator {
   id        String   @id @default(cuid())
   name      String
-  slug      String   @unique
   email     String   @unique
   phone     String?
   address   String?
@@ -37,7 +36,7 @@ model Operator {
 model Vessel {
   id         String     @id @default(cuid())
   name       String
-  type       VesselType @default(FISHING_BOAT)
+  type       String     @default("FISHING_BOAT")
   capacity   Int
   operatorId String
   createdAt  DateTime   @default(now())
