@@ -3,7 +3,7 @@
  */
 export function generateBookingLink(companySlug: string, tourId: string): string {
   const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-  return `${baseUrl}/book/${companySlug}/${tourId}`;
+  return `${baseUrl}/book/${companySlug}/tour/${tourId}`;
 }
 
 /**
