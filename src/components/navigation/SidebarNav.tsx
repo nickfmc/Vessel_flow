@@ -69,7 +69,7 @@ export function SidebarNav() {
           <Link
             key={item.name}
             href={item.href}
-            className={`c-sidebar-nav__item ${
+            className={`c-sidebar-nav__item group ${
               isActive(item.href) ? 'c-sidebar-nav__item--active' : ''
             }`}
           >
