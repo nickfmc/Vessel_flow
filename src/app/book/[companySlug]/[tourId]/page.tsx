@@ -32,7 +32,6 @@ async function getBookingData(companySlug: string, tourId: string) {
       },
       include: {
         operator: true,
-        vessel: true,
         scheduledTours: {
           where: {
             startTime: {
@@ -40,6 +39,7 @@ async function getBookingData(companySlug: string, tourId: string) {
             },
           },
           include: {
+            vessel: true,
             bookings: {
               select: {
                 passengerCount: true,
@@ -113,12 +113,12 @@ export default async function BookingPage({ params }: BookingPageProps) {
       (sum, booking) => sum + booking.passengerCount,
       0
     );
-    const availableSeats = tour.vessel.capacity - totalBookedSeats;
+    const availableSeats = scheduledTour.vessel.capacity - totalBookedSeats;
 
     return {
       ...scheduledTour,
       availability: {
-        totalCapacity: tour.vessel.capacity,
+        totalCapacity: scheduledTour.vessel.capacity,
         bookedSeats: totalBookedSeats,
         availableSeats,
         isFullyBooked: availableSeats === 0,
@@ -161,7 +161,7 @@ export default async function BookingPage({ params }: BookingPageProps) {
               <div className="bg-gradient-to-r from-vessel-600 to-vessel-700 px-6 py-4">
                 <h2 className="text-xl font-bold text-white">{tour.title}</h2>
                 <p className="text-vessel-100 text-sm mt-1">
-                  Aboard {tour.vessel.name}
+                  Marine Adventure Experience
                 </p>
               </div>
 
@@ -202,8 +202,8 @@ export default async function BookingPage({ params }: BookingPageProps) {
                     </svg>
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">{tour.vessel.name}</p>
-                    <p className="text-sm text-gray-600">Capacity: {tour.vessel.capacity} passengers</p>
+                    <p className="font-semibold text-gray-900">Professional Vessels</p>
+                    <p className="text-sm text-gray-600">Modern, well-maintained fleet</p>
                   </div>
                 </div>
 

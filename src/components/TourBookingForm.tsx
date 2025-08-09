@@ -8,15 +8,15 @@ interface Tour {
   description: string | null;
   price: { toNumber(): number };
   durationInMinutes: number;
-  vessel: {
-    name: string;
-    capacity: number;
-  };
 }
 
 interface AvailableSchedule {
   id: string;
   startTime: Date;
+  vessel: {
+    name: string;
+    capacity: number;
+  };
   availability: {
     totalCapacity: number;
     bookedSeats: number;
@@ -157,7 +157,7 @@ export function TourBookingForm({ tour, availableSchedules }: TourBookingFormPro
                           {formatDate(schedule.startTime)} at {formatTime(schedule.startTime)}
                         </p>
                         <p className="text-sm text-gray-600">
-                          {schedule.availability.availableSeats} of {schedule.availability.totalCapacity} seats available
+                          {schedule.availability.availableSeats} of {schedule.availability.totalCapacity} seats available on {schedule.vessel.name}
                         </p>
                       </div>
                     </div>
