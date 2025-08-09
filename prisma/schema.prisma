@@ -7,10 +7,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  // DATABASE_URL is the Accelerate/Data Proxy URL (prisma+postgres://...)
-  // DIRECT_URL should be a standard Postgres connection string for running migrations
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL") // Add this env var in .env for migrations
+  directUrl = env("DIRECT_URL")
 }
 
 model Operator {
