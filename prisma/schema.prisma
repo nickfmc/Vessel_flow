@@ -11,6 +11,12 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum VesselType {
+  FISHING_BOAT
+  ZODIAC
+  COVERED_VESSEL
+}
+
 model Operator {
   id        String   @id @default(cuid())
   name      String
@@ -31,7 +37,7 @@ model Operator {
 model Vessel {
   id         String   @id @default(cuid())
   name       String
-  type       String   @default("FISHING_BOAT")
+  type       VesselType @default(FISHING_BOAT)
   capacity   Int
   operatorId String
   createdAt  DateTime @default(now())
