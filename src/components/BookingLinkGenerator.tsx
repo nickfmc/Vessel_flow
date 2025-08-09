@@ -5,14 +5,14 @@ import { generateShareableBookingLink } from '~/utils/booking-links';
 
 interface BookingLinkGeneratorProps {
   companySlug: string;
-  scheduledTourId: string;
+  tourId: string;
   tourTitle: string;
 }
 
-export function BookingLinkGenerator({ companySlug, scheduledTourId, tourTitle }: BookingLinkGeneratorProps) {
+export function BookingLinkGenerator({ companySlug, tourId, tourTitle }: BookingLinkGeneratorProps) {
   const [copied, setCopied] = useState(false);
   
-  const linkData = generateShareableBookingLink(companySlug, scheduledTourId, tourTitle);
+  const linkData = generateShareableBookingLink(companySlug, tourId, tourTitle);
 
   const copyToClipboard = async (text: string) => {
     try {

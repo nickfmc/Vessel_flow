@@ -352,7 +352,7 @@ export default function ScheduleClientPage({ scheduledTours, tours, vessels, com
                           <div className="mt-4 pt-4 border-t border-gray-200">
                             <BookingLinkGenerator
                               companySlug={companySlug}
-                              scheduledTourId={scheduledTour.id}
+                              tourId={scheduledTour.tourId}
                               tourTitle={scheduledTour.tour.title}
                             />
                             <button

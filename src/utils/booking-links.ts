@@ -1,9 +1,9 @@
 /**
- * Generate a booking link for a scheduled tour
+ * Generate a booking link for a tour
  */
-export function generateBookingLink(companySlug: string, scheduledTourId: string): string {
+export function generateBookingLink(companySlug: string, tourId: string): string {
   const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-  return `${baseUrl}/book/${companySlug}/${scheduledTourId}`;
+  return `${baseUrl}/book/${companySlug}/${tourId}`;
 }
 
 /**
@@ -11,7 +11,7 @@ export function generateBookingLink(companySlug: string, scheduledTourId: string
  */
 export function generateShareableBookingLink(
   companySlug: string, 
-  scheduledTourId: string, 
+  tourId: string, 
   tourTitle: string
 ): {
   url: string;
@@ -19,7 +19,7 @@ export function generateShareableBookingLink(
   emailSubject: string;
   emailBody: string;
 } {
-  const url = generateBookingLink(companySlug, scheduledTourId);
+  const url = generateBookingLink(companySlug, tourId);
   
   return {
     url,
