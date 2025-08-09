@@ -3,12 +3,28 @@ import ScheduleClientPage from "./ScheduleClientPage";
 
 async function getScheduleData() {
   try {
+    // Get the current operator
+    const operator = await db.operator.findFirst();
+    
+    if (!operator) {
+      console.error("No operator found");
+      return {
+        scheduledTours: [],
+        tours: [],
+        vessels: [],
+        companySlug: '',
+      };
+    }
+
     // Get all scheduled tours for the next 30 days
     const thirtyDaysFromNow = new Date();
     thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
 
     const scheduledTours = await db.scheduledTour.findMany({
       where: {
+        tour: {
+          operatorId: operator.id,
+        },
         startTime: {
           gte: new Date(),
           lte: thirtyDaysFromNow,
@@ -30,12 +46,18 @@ async function getScheduleData() {
 
     // Get all tours and vessels for the form
     const tours = await db.tour.findMany({
+      where: {
+        operatorId: operator.id,
+      },
       orderBy: {
         title: 'asc',
       },
     });
 
     const vessels = await db.vessel.findMany({
+      where: {
+        operatorId: operator.id,
+      },
       orderBy: {
         name: 'asc',
       },
@@ -87,6 +109,7 @@ async function getScheduleData() {
       scheduledTours: serializedScheduledTours,
       tours: serializedTours,
       vessels,
+      companySlug: operator.slug,
     };
   } catch (error) {
     console.error("Error fetching schedule data:", error);
@@ -94,6 +117,7 @@ async function getScheduleData() {
       scheduledTours: [],
       tours: [],
       vessels: [],
+      companySlug: '',
     };
   }
 }

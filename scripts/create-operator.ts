@@ -32,6 +32,7 @@ async function createOperator() {
     const operator = await db.operator.create({
       data: {
         name: "CRWW Marine Operations",
+        slug: "crww-marine",
         email: "admin@crww.com",
         phone: "+1 (555) 123-4567",
         address: "123 Marina Way, Coastal City, CC 12345",

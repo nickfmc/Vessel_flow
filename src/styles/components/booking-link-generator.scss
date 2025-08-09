@@ -1,0 +1,61 @@
+.c-booking-link-generator {
+  @apply bg-vessel-50 rounded-lg p-4 border border-vessel-200;
+
+  &__header {
+    @apply mb-4;
+  }
+
+  &__title {
+    @apply text-sm font-semibold text-gray-900 mb-1;
+  }
+
+  &__subtitle {
+    @apply text-xs text-gray-600;
+  }
+
+  &__link-container {
+    @apply mb-4;
+  }
+
+  &__link-display {
+    @apply flex items-center space-x-2;
+  }
+
+  &__link-input {
+    @apply flex-1 px-3 py-2 text-xs bg-white border border-gray-300 rounded-lg;
+    @apply focus:outline-none focus:ring-2 focus:ring-vessel-500 focus:border-vessel-500;
+    @apply font-mono text-gray-700;
+  }
+
+  &__copy-button {
+    @apply flex items-center space-x-1 px-3 py-2 bg-vessel-600 text-white;
+    @apply rounded-lg hover:bg-vessel-700 transition-colors duration-200;
+    @apply text-xs font-medium;
+  }
+
+  &__copy-text {
+    @apply text-xs;
+  }
+
+  &__share-options {
+    @apply space-y-2;
+  }
+
+  &__share-label {
+    @apply text-xs font-medium text-gray-700;
+  }
+
+  &__share-buttons {
+    @apply flex space-x-2;
+  }
+
+  &__share-button {
+    @apply flex items-center space-x-1 px-3 py-2 bg-white border border-gray-300;
+    @apply rounded-lg hover:bg-gray-50 transition-colors duration-200;
+    @apply text-xs font-medium text-gray-700;
+
+    &:hover {
+      @apply border-vessel-300 text-vessel-700;
+    }
+  }
+}

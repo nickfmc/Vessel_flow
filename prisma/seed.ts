@@ -7,6 +7,7 @@ async function main() {
   const operator = await db.operator.create({
     data: {
       name: "Campbell River Charters",
+      slug: "campbell-river-charters",
       email: "info@campbellrivercharters.com",
       phone: "+1 (250) 555-0123",
       address: "123 Harbour Way, Campbell River, BC V9W 2H1",

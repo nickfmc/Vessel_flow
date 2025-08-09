@@ -5,6 +5,7 @@ import { Modal } from "~/components/modals/Modal";
 import { ScheduledTourForm } from "~/components/forms/ScheduledTourForm";
 import { BulkScheduleForm } from "~/components/forms/BulkScheduleForm";
 import { ScheduleCalendar } from "~/components/calendar/ScheduleCalendar";
+import { BookingLinkGenerator } from "~/components/BookingLinkGenerator";
 
 interface Tour {
   id: string;
@@ -48,6 +49,7 @@ interface ScheduleClientPageProps {
   scheduledTours: ScheduledTour[];
   tours: Tour[];
   vessels: Vessel[];
+  companySlug: string;
 }
 
 function formatDate(dateString: string): string {
@@ -79,11 +81,12 @@ function formatDuration(minutes: number): string {
   }
 }
 
-export default function ScheduleClientPage({ scheduledTours, tours, vessels }: ScheduleClientPageProps) {
+export default function ScheduleClientPage({ scheduledTours, tours, vessels, companySlug }: ScheduleClientPageProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
   const [editingScheduledTour, setEditingScheduledTour] = useState<any>(null);
   const [deletingScheduledTour, setDeletingScheduledTour] = useState<string | null>(null);
+  const [showingBookingLink, setShowingBookingLink] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
 
   const handleEdit = (scheduledTour: ScheduledTour) => {
@@ -324,6 +327,15 @@ export default function ScheduleClientPage({ scheduledTours, tours, vessels }: S
                             </svg>
                           </button>
                           <button 
+                            onClick={() => setShowingBookingLink(scheduledTour.id)}
+                            className="text-gray-400 hover:text-blue-600 p-2"
+                            title="Get booking link"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                            </svg>
+                          </button>
+                          <button 
                             onClick={() => handleDelete(scheduledTour.id)}
                             disabled={deletingScheduledTour === scheduledTour.id}
                             className="text-gray-400 hover:text-red-600 disabled:opacity-50 p-2"
@@ -334,6 +346,23 @@ export default function ScheduleClientPage({ scheduledTours, tours, vessels }: S
                             </svg>
                           </button>
                         </div>
+
+                        {/* Booking Link Generator */}
+                        {showingBookingLink === scheduledTour.id && (
+                          <div className="mt-4 pt-4 border-t border-gray-200">
+                            <BookingLinkGenerator
+                              companySlug={companySlug}
+                              scheduledTourId={scheduledTour.id}
+                              tourTitle={scheduledTour.tour.title}
+                            />
+                            <button
+                              onClick={() => setShowingBookingLink(null)}
+                              className="mt-2 text-xs text-gray-500 hover:text-gray-700"
+                            >
+                              Hide link
+                            </button>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
