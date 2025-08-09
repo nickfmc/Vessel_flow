@@ -55,14 +55,12 @@ model Tour {
   description       String?
   price             Decimal  @db.Decimal(10, 2)
   durationInMinutes Int
-  vesselId          String
   operatorId        String
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
   // Relations
   operator       Operator        @relation(fields: [operatorId], references: [id], onDelete: Cascade)
-  vessel         Vessel          @relation(fields: [vesselId], references: [id], onDelete: Cascade)
   scheduledTours ScheduledTour[]
 
   @@map("tours")
@@ -72,11 +70,13 @@ model ScheduledTour {
   id        String   @id @default(cuid())
   startTime DateTime
   tourId    String
+  vesselId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
   tour     Tour      @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  vessel   Vessel    @relation(fields: [vesselId], references: [id], onDelete: Cascade)
   bookings Booking[]
 
   @@map("scheduled_tours")
