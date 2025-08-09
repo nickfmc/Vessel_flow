@@ -3,7 +3,18 @@ import ToursClientPage from "./ToursClientPage";
 
 async function getTours() {
   try {
+    // Get the current operator (in a real app, this would come from user session)
+    const operator = await db.operator.findFirst();
+    
+    if (!operator) {
+      console.error("No operator found");
+      return [];
+    }
+
     const tours = await db.tour.findMany({
+      where: {
+        operatorId: operator.id, // Filter by current operator
+      },
       include: {
         operator: {
           select: {
